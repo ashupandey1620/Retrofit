@@ -48,7 +48,9 @@ class MainActivity : AppCompatActivity() {
 
         //putRequest()
 
-        patchRequest()
+        //patchRequest()
+
+        deleteRequest()
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -159,6 +161,39 @@ class MainActivity : AppCompatActivity() {
 
                 val user = User("patch body",null,null,23)
                 RetrofitInstance.api.patchPost(23,user)
+
+            }catch (e: HttpException){
+                Toast.makeText(applicationContext,"http error ${e.message}",Toast.LENGTH_LONG).show()
+                return@launch
+            }catch (e: IOException){
+                Toast.makeText(applicationContext,"app error ${e.message}",Toast.LENGTH_LONG).show()
+                return@launch
+            }
+            if (response.isSuccessful && response.body() != null){
+                withContext(Dispatchers.Main){
+
+                        progressBar.visibility = View.GONE
+                        tvId.visibility = View.VISIBLE
+                        tvUserId.visibility = View.VISIBLE
+                        tvBody.visibility = View.VISIBLE
+                        tvTitle.visibility = View.VISIBLE
+
+                        tvId.text = "id: ${ response.body()!!.id.toString() }"
+                        tvUserId.text = "user id: ${ response.body()!!.userId}"
+                        tvTitle.text = "title: ${ response.body()!!.title}"
+                        tvBody.text = "body: ${ response.body()!!.body}"
+
+                }
+            }
+        }
+    }
+
+    private fun deleteRequest(){
+        GlobalScope.launch(Dispatchers.IO) {
+            val response = try {
+
+
+                RetrofitInstance.api.deletePost(23)
 
             }catch (e: HttpException){
                 Toast.makeText(applicationContext,"http error ${e.message}",Toast.LENGTH_LONG).show()

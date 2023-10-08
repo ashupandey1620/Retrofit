@@ -3,6 +3,7 @@ package com.connection.retrofit
 import com.connection.retrofit.models.User
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
@@ -41,4 +42,9 @@ interface ApiInterface {
         @Path("id") id : Int,
         @Body user: User
     ):Response<User>
+
+    @DELETE("posts/{id}")
+    suspend fun deletePost(
+        @Path("id") id : Int
+    ) : Response<User>
 }
