@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import com.connection.retrofit.models.User
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
@@ -87,6 +88,40 @@ class MainActivity : AppCompatActivity() {
 
                 //val user = User("new body",null,"new title",23)
                 RetrofitInstance.api.createUrlPost(23,"url title","url body")
+
+            }catch (e: HttpException){
+                Toast.makeText(applicationContext,"http error ${e.message}",Toast.LENGTH_LONG).show()
+                return@launch
+            }catch (e: IOException){
+                Toast.makeText(applicationContext,"app error ${e.message}",Toast.LENGTH_LONG).show()
+                return@launch
+            }
+            if (response.isSuccessful && response.body() != null){
+                withContext(Dispatchers.Main){
+
+                        progressBar.visibility = View.GONE
+                        tvId.visibility = View.VISIBLE
+                        tvUserId.visibility = View.VISIBLE
+                        tvBody.visibility = View.VISIBLE
+                        tvTitle.visibility = View.VISIBLE
+
+                        tvId.text = "id: ${ response.body()!!.id.toString() }"
+                        tvUserId.text = "user id: ${ response.body()!!.userId}"
+                        tvTitle.text = "title: ${ response.body()!!.title}"
+                        tvBody.text = "body: ${ response.body()!!.body}"
+
+                }
+            }
+        }
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun putRequest(){
+        GlobalScope.launch(Dispatchers.IO) {
+            val response = try {
+
+                val user = User("put body",null,null,23)
+                RetrofitInstance.api.putPost(23,user)
 
             }catch (e: HttpException){
                 Toast.makeText(applicationContext,"http error ${e.message}",Toast.LENGTH_LONG).show()

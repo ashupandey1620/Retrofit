@@ -7,6 +7,8 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Path
 
 
 interface ApiInterface {
@@ -24,6 +26,12 @@ interface ApiInterface {
         @Field("userId") userId : Int ,
         @Field("title") title : String ,
         @Field("body") body :String ,
+    ):Response<User>
+
+    @PUT("posts/{id}")
+    suspend fun putPost(
+        @Path("id") id : Int ,
+        @Body user: User
     ):Response<User>
 
 
