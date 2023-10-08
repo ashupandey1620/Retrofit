@@ -1,11 +1,13 @@
 package com.connection.retrofit
 
+import android.annotation.SuppressLint
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -39,7 +41,9 @@ class MainActivity : AppCompatActivity() {
             tvBody.visibility = View.GONE
             tvTitle.visibility = View.GONE
 
-        getRequest()
+        //getRequest()
+
+        postRequest()
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -69,6 +73,41 @@ class MainActivity : AppCompatActivity() {
                         tvUserId.text = "user id: ${ response.body()!!.userId}"
                         tvTitle.text = response.body()!!.title
                         tvBody.text = response.body()!!.body
+
+                }
+            }
+        }
+    }
+
+    @SuppressLint("SetTextI18n")
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun postRequest() {
+        GlobalScope.launch(Dispatchers.IO) {
+            val response = try {
+
+                //val user = User("new body",null,"new title",23)
+                RetrofitInstance.api.createUrlPost(23,"url title","url body")
+
+            }catch (e: HttpException){
+                Toast.makeText(applicationContext,"http error ${e.message}",Toast.LENGTH_LONG).show()
+                return@launch
+            }catch (e: IOException){
+                Toast.makeText(applicationContext,"app error ${e.message}",Toast.LENGTH_LONG).show()
+                return@launch
+            }
+            if (response.isSuccessful && response.body() != null){
+                withContext(Dispatchers.Main){
+
+                        progressBar.visibility = View.GONE
+                        tvId.visibility = View.VISIBLE
+                        tvUserId.visibility = View.VISIBLE
+                        tvBody.visibility = View.VISIBLE
+                        tvTitle.visibility = View.VISIBLE
+
+                        tvId.text = "id: ${ response.body()!!.id.toString() }"
+                        tvUserId.text = "user id: ${ response.body()!!.userId}"
+                        tvTitle.text = "title: ${ response.body()!!.title}"
+                        tvBody.text = "body: ${ response.body()!!.body}"
 
                 }
             }
